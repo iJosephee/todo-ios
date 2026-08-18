@@ -8,15 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var tasks: [String] = [
-        "Comprar comida",
-        "Estudiar Swift",
-        "Hacer ejercicio"
-    ]
-    @State private var completedTasks: [String] = [
-        "Comprar comida",
-        "Estudiar Swift"
-    ]
+    @State private var tasks = [Task]()
     @State private var taskName = ""
     @State private var showAlert = false
     
@@ -36,13 +28,17 @@ struct ContentView: View {
     
     var taskList: some View {
         List {
-            ForEach(tasks, id: \.self) { task in
+            ForEach($tasks, id: \.self) { $task in
                 HStack {
-                    Text(task)
+                    Text(task.title)
                     Spacer()
-                    if completedTasks.contains(task) {
+                    if task.isCompleted {
                         Image(systemName: "checkmark")
                     }
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    task.isCompleted.toggle()
                 }
                 .swipeActions {
                     Button(role: .destructive) {
@@ -77,7 +73,8 @@ struct ContentView: View {
     }
     
     func saveTask(name: String) {
-        self.tasks.append(name)
+        let newTask = Task(title: name, isCompleted: false)
+        self.tasks.append(newTask)
         taskName = ""
     }
 }
