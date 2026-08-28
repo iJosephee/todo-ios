@@ -8,9 +8,18 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var tasks = [Task]()
+    @State private var tasks: [Task]
     @State private var taskName = ""
     @State private var showAlert = false
+    
+    init() {
+        if let data = UserDefaults.standard.data(forKey: "SavedTasks"),
+           let decoded = try? JSONDecoder().decode([Task].self, from: data) {
+            self.tasks = decoded
+            return
+        }
+        tasks = []
+    }
     
      var navigation: some View {
          Group {
@@ -44,6 +53,7 @@ struct ContentView: View {
                     Button(role: .destructive) {
                         let index = tasks.firstIndex(of: task)!
                         tasks.remove(at: index)
+                        saveTasks()
                     } label: {
                         Image(systemName: "trash")
                     }
@@ -63,7 +73,7 @@ struct ContentView: View {
             TextField("Comprar comida", text: $taskName)
             Button("Cancelar", role: .cancel) { }
             Button("Agregar") {
-                saveTask(name: taskName)
+                addTask(name: taskName)
             }
         }
     }
@@ -72,9 +82,16 @@ struct ContentView: View {
         navigation
     }
     
-    func saveTask(name: String) {
+    func saveTasks() {
+        if let encoded = try? JSONEncoder().encode(tasks) {
+            UserDefaults.standard.set(encoded, forKey: "SavedTasks")
+        }
+    }
+    
+    func addTask(name: String) {
         let newTask = Task(title: name, isCompleted: false)
         self.tasks.append(newTask)
+        saveTasks()
         taskName = ""
     }
 }

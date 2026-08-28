@@ -12,7 +12,7 @@ Create a button in the toolbar area.
 User the .alert view modifier to show an Alert
 Create swipe actions for eliminate rows in a list
 Create properties as view to reduce duplicated code.
-
+Add persistence using User Defaults
 
 
 
@@ -21,3 +21,4 @@ Features:
 See a list of tasks
 Create tasks
 Eliminate tasks
+Save Tasks
