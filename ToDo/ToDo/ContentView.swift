@@ -9,8 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var tasks: [Task]
-    @State private var taskName = ""
     @State private var showAlert = false
+    @State private var selectedCategory = Category.Personal
     
     init() {
         if let data = UserDefaults.standard.data(forKey: "SavedTasks"),
@@ -69,11 +69,10 @@ struct ContentView: View {
                 Image(systemName: "plus")
             }
         }
-        .alert("New Task", isPresented: $showAlert) {
-            TextField("Comprar comida", text: $taskName)
-            Button("Cancelar", role: .cancel) { }
-            Button("Agregar") {
-                addTask(name: taskName)
+        .sheet(isPresented: $showAlert) {
+            NewTaskSheet { ( taskName, category) in
+                showAlert = false
+                addTask(name: taskName, category: category)
             }
         }
     }
@@ -88,11 +87,10 @@ struct ContentView: View {
         }
     }
     
-    func addTask(name: String) {
-        let newTask = Task(title: name, isCompleted: false)
+    func addTask(name: String, category: Category) {
+        let newTask = Task(title: name, category: category, priority: 0, dueDate: Date(), isCompleted: false)
         self.tasks.append(newTask)
         saveTasks()
-        taskName = ""
     }
 }
 
