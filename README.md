@@ -15,6 +15,7 @@ Create properties as view to reduce duplicated code.
 Add persistence using User Defaults
 Changed from .alert to .sheet
 
+
 Features:
 
 See a list of tasks
@@ -22,3 +23,4 @@ Create tasks
 Eliminate tasks
 Save Tasks
 Add task categories
+Add task priorities

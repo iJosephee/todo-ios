@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct TaskList: View {
     @State private var tasks: [Task]
     @State private var showAlert = false
     @State private var selectedCategory = Category.Personal
@@ -39,7 +39,11 @@ struct ContentView: View {
         List {
             ForEach($tasks, id: \.self) { $task in
                 HStack {
+                    Image(systemName: task.priority == Priority.Medium ? "exclamationmark" : task.priority == Priority.High ? "exclamationmark.2" : "")
+                        .foregroundColor(task.priority == Priority.Medium ? .orange : task.priority == Priority.High ? .red : .accentColor)
                     Text(task.title)
+                    Spacer()
+                    Text(task.category.rawValue)
                     Spacer()
                     if task.isCompleted {
                         Image(systemName: "checkmark")
@@ -70,9 +74,9 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $showAlert) {
-            NewTaskSheet { ( taskName, category) in
+            NewTaskSheet { ( name, category, priority) in
                 showAlert = false
-                addTask(name: taskName, category: category)
+                addTask(name, category, priority)
             }
         }
     }
@@ -87,13 +91,13 @@ struct ContentView: View {
         }
     }
     
-    func addTask(name: String, category: Category) {
-        let newTask = Task(title: name, category: category, priority: 0, dueDate: Date(), isCompleted: false)
+    func addTask(_ name: String, _ category: Category, _ priority: Priority) {
+        let newTask = Task(title: name, category: category, priority: priority, dueDate: Date(), isCompleted: false)
         self.tasks.append(newTask)
         saveTasks()
     }
 }
 
 #Preview {
-    ContentView()
+    TaskList()
 }

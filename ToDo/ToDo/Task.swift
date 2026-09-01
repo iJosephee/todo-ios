@@ -6,16 +6,22 @@
 //
 import Foundation
 
-enum Category: Codable {
-    case Personal
-    case Work
-    case Study
+enum Category: String, Codable {
+    case Personal = "Personal"
+    case Work = "Trabajo"
+    case Study = "Estudio"
+}
+
+enum Priority: Codable {
+    case High
+    case Medium
+    case Low
 }
 
 struct Task: Hashable, Codable {
     var title: String
     var category: Category
-    var priority: Int
+    var priority: Priority
     var dueDate: Date
     var isCompleted: Bool
 }

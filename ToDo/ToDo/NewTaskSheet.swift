@@ -10,7 +10,9 @@ import SwiftUI
 struct NewTaskSheet: View {
     @State private var taskName = ""
     @State private var selectedCategory = Category.Personal
-    var closing: (String, Category) -> Void
+    @State private var currentPriority = Priority.Low
+    
+    var closing: (String, Category, Priority) -> Void
     
     var navigation: some View {
         Group {
@@ -34,6 +36,11 @@ struct NewTaskSheet: View {
                 Text("Trabajo").tag(Category.Work)
                 Text("Estudio").tag(Category.Study)
             }
+            Picker("Prioridad", selection: $currentPriority) {
+                Text("Alta").tag(Priority.High)
+                Text("Media").tag(Priority.Medium)
+                Text("Baja").tag(Priority.Low)
+            }
             .navigationTitle("New Task")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -44,7 +51,7 @@ struct NewTaskSheet: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Listo") {
-                        closing(taskName, selectedCategory)
+                        closing(taskName, selectedCategory, currentPriority)
                     }
                 }
             }
@@ -57,7 +64,7 @@ struct NewTaskSheet: View {
 }
 
 #Preview {
-    NewTaskSheet { name, category in
+    NewTaskSheet { name, category, priority in
         print("Done")
     }
 }
