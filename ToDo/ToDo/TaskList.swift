@@ -41,10 +41,30 @@ struct TaskList: View {
                 HStack {
                     Image(systemName: task.priority == Priority.Medium ? "exclamationmark" : task.priority == Priority.High ? "exclamationmark.2" : "")
                         .foregroundColor(task.priority == Priority.Medium ? .orange : task.priority == Priority.High ? .red : .accentColor)
-                    Text(task.title)
-                    Spacer()
-                    Text(task.category.rawValue)
-                    Spacer()
+                    VStack {
+                        HStack {
+                            Text(task.title)
+                            Spacer()
+                        }
+                        HStack {
+                            Text(task.category.rawValue)
+                            Text("-")
+                            Text(task.priority.rawValue)
+                            Spacer()
+                        }
+                        HStack {
+                            if Calendar.current.component(.day, from: task.dueDate) == Calendar.current.component(.day, from: Date.now) {
+                                Text("Hoy")
+                                Spacer()
+                            } else if Calendar.current.component(.day, from: task.dueDate) < Calendar.current.component(.day, from: Date.now) {
+                                Text("Vencida")
+                                Spacer()
+                            } else if Calendar.current.component(.day, from: task.dueDate) > Calendar.current.component(.day, from: Date.now) {
+                                Text("\(task.dueDate.formatted(date: .long, time: .omitted))")
+                                Spacer()
+                            }
+                        }
+                    }
                     if task.isCompleted {
                         Image(systemName: "checkmark")
                     }
@@ -74,9 +94,9 @@ struct TaskList: View {
             }
         }
         .sheet(isPresented: $showAlert) {
-            NewTaskSheet { ( name, category, priority) in
+            NewTaskSheet { ( name, category, priority, dueDate) in
                 if let name = name {
-                    addTask(name, category, priority)
+                    addTask(name, category, priority, dueDate)
                 }
                 showAlert = false
             }
@@ -93,8 +113,8 @@ struct TaskList: View {
         }
     }
     
-    func addTask(_ name: String, _ category: Category, _ priority: Priority) {
-        let newTask = Task(title: name, category: category, priority: priority, dueDate: Date(), isCompleted: false)
+    func addTask(_ name: String, _ category: Category, _ priority: Priority, _ dueDate: Date) {
+        let newTask = Task(title: name, category: category, priority: priority, dueDate: dueDate, isCompleted: false)
         self.tasks.append(newTask)
         saveTasks()
     }

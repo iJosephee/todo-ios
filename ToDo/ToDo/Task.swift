@@ -12,10 +12,10 @@ enum Category: String, Codable {
     case Study = "Estudio"
 }
 
-enum Priority: Codable {
-    case High
-    case Medium
-    case Low
+enum Priority: String, Codable {
+    case High = "Alta"
+    case Medium = "Media"
+    case Low = "Baja"
 }
 
 struct Task: Hashable, Codable {

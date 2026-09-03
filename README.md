@@ -14,7 +14,8 @@ Create swipe actions for eliminate rows in a list
 Create properties as view to reduce duplicated code.
 Add persistence using User Defaults
 Changed from .alert to .sheet
-
+To use DatePicker
+Format date using FormatStyle
 
 Features:
 
@@ -24,3 +25,4 @@ Eliminate tasks
 Save Tasks
 Add task categories
 Add task priorities
+Add task due dates

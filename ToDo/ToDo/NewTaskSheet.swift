@@ -11,8 +11,9 @@ struct NewTaskSheet: View {
     @State private var taskName = ""
     @State private var selectedCategory = Category.Personal
     @State private var currentPriority = Priority.Low
+    @State private var dueDate = Date()
     
-    var closing: (String?, Category, Priority) -> Void
+    var closing: (String?, Category, Priority, Date) -> Void
     
     var navigation: some View {
         Group {
@@ -41,17 +42,22 @@ struct NewTaskSheet: View {
                 Text("Media").tag(Priority.Medium)
                 Text("Baja").tag(Priority.Low)
             }
+            DatePicker(
+                "Fecha Límite",
+                selection: $dueDate,
+                displayedComponents: [.date]
+            )
             .navigationTitle("New Task")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction){
                     Button("Cancelar", role: .cancel) {
-                        closing(nil, selectedCategory, currentPriority)
+                        closing(nil, selectedCategory, currentPriority, dueDate)
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Listo") {
-                        closing(taskName, selectedCategory, currentPriority)
+                        closing(taskName, selectedCategory, currentPriority, dueDate)
                     }
                     .disabled(taskName.isEmpty)
                 }
@@ -65,7 +71,7 @@ struct NewTaskSheet: View {
 }
 
 #Preview {
-    NewTaskSheet { name, category, priority in
+    NewTaskSheet { name, category, priority, date in
         print("Done")
     }
 }
