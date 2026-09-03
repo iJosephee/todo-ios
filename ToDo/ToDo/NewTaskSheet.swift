@@ -12,7 +12,7 @@ struct NewTaskSheet: View {
     @State private var selectedCategory = Category.Personal
     @State private var currentPriority = Priority.Low
     
-    var closing: (String, Category, Priority) -> Void
+    var closing: (String?, Category, Priority) -> Void
     
     var navigation: some View {
         Group {
@@ -46,13 +46,14 @@ struct NewTaskSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction){
                     Button("Cancelar", role: .cancel) {
-                        print("Cancel")
+                        closing(nil, selectedCategory, currentPriority)
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Listo") {
                         closing(taskName, selectedCategory, currentPriority)
                     }
+                    .disabled(taskName.isEmpty)
                 }
             }
         }

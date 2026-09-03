@@ -75,8 +75,10 @@ struct TaskList: View {
         }
         .sheet(isPresented: $showAlert) {
             NewTaskSheet { ( name, category, priority) in
+                if let name = name {
+                    addTask(name, category, priority)
+                }
                 showAlert = false
-                addTask(name, category, priority)
             }
         }
     }
