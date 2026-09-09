@@ -11,6 +11,7 @@ struct TaskList: View {
     @State private var tasks: [Task]
     @State private var showAlert = false
     @State private var selectedCategory = Category.Personal
+    @State private var selectedFilter = 0
     
     init() {
         if let data = UserDefaults.standard.data(forKey: "SavedTasks"),
@@ -25,66 +26,113 @@ struct TaskList: View {
          Group {
              if #available (iOS 16.0, *) {
                  NavigationStack {
-                     taskList
+                     VStack {
+                         filters
+                         taskList
+                     }
                  }
              } else {
                  NavigationView {
-                     taskList
+                     VStack {
+                         filters
+                         taskList
+                     }
                  }
              }
          }
     }
     
+    var filters: some View {
+        Picker("Choose", selection: $selectedFilter) {
+            Text("Todas").tag(0)
+            Text("Pendientes").tag(1)
+            Text("Completadas").tag(2)
+            Text("Vencidas").tag(3)
+        }
+        .pickerStyle(.segmented)
+        .padding(.horizontal)
+    }
+    
     var taskList: some View {
         List {
             ForEach($tasks, id: \.self) { $task in
-                HStack {
-                    Image(systemName: task.priority == Priority.Medium ? "exclamationmark" : task.priority == Priority.High ? "exclamationmark.2" : "")
-                        .foregroundColor(task.priority == Priority.Medium ? .orange : task.priority == Priority.High ? .red : .accentColor)
-                    VStack {
-                        HStack {
-                            Text(task.title)
-                            Spacer()
+                if selectedFilter == 3 {
+                    if Calendar.current.component(.day, from: task.dueDate) < Calendar.current.component(.day, from: Date.now) {
+                        // Expired
+                        TaskCell(task: task)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                task.isCompleted.toggle()
+                                saveTasks()
+                            }
+                            .swipeActions {
+                                Button(role: .destructive) {
+                                    let index = tasks.firstIndex(of: task)!
+                                    tasks.remove(at: index)
+                                    saveTasks()
+                                } label: {
+                                    Image(systemName: "trash")
+                                }
+                            }
+                    }
+                } else if selectedFilter == 2 {
+                    // Completed
+                    if task.isCompleted {
+                        TaskCell(task: task)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                task.isCompleted.toggle()
+                                saveTasks()
+                            }
+                            .swipeActions {
+                                Button(role: .destructive) {
+                                    let index = tasks.firstIndex(of: task)!
+                                    tasks.remove(at: index)
+                                    saveTasks()
+                                } label: {
+                                    Image(systemName: "trash")
+                                }
+                            }
+                    }
+                } else if selectedFilter == 1 {
+                    // Pending
+                    if !task.isCompleted {
+                        TaskCell(task: task)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                task.isCompleted.toggle()
+                                saveTasks()
+                            }
+                            .swipeActions {
+                                Button(role: .destructive) {
+                                    let index = tasks.firstIndex(of: task)!
+                                    tasks.remove(at: index)
+                                    saveTasks()
+                                } label: {
+                                    Image(systemName: "trash")
+                                }
+                            }
+                    }
+                } else {
+                    // All
+                    TaskCell(task: task)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            task.isCompleted.toggle()
+                            saveTasks()
                         }
-                        HStack {
-                            Text(task.category.rawValue)
-                            Text("-")
-                            Text(task.priority.rawValue)
-                            Spacer()
-                        }
-                        HStack {
-                            if Calendar.current.component(.day, from: task.dueDate) == Calendar.current.component(.day, from: Date.now) {
-                                Text("Hoy")
-                                Spacer()
-                            } else if Calendar.current.component(.day, from: task.dueDate) < Calendar.current.component(.day, from: Date.now) {
-                                Text("Vencida")
-                                Spacer()
-                            } else if Calendar.current.component(.day, from: task.dueDate) > Calendar.current.component(.day, from: Date.now) {
-                                Text("\(task.dueDate.formatted(date: .long, time: .omitted))")
-                                Spacer()
+                        .swipeActions {
+                            Button(role: .destructive) {
+                                let index = tasks.firstIndex(of: task)!
+                                tasks.remove(at: index)
+                                saveTasks()
+                            } label: {
+                                Image(systemName: "trash")
                             }
                         }
-                    }
-                    if task.isCompleted {
-                        Image(systemName: "checkmark")
-                    }
-                }
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    task.isCompleted.toggle()
-                }
-                .swipeActions {
-                    Button(role: .destructive) {
-                        let index = tasks.firstIndex(of: task)!
-                        tasks.remove(at: index)
-                        saveTasks()
-                    } label: {
-                        Image(systemName: "trash")
-                    }
                 }
             }
         }
-        
         .navigationTitle("To Do")
         .toolbar {
             Button {

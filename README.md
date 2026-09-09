@@ -16,6 +16,7 @@ Add persistence using User Defaults
 Changed from .alert to .sheet
 To use DatePicker
 Format date using FormatStyle
+To use the Picker for segmented tabs
 
 Features:
 
@@ -26,3 +27,4 @@ Save Tasks
 Add task categories
 Add task priorities
 Add task due dates
+Add task filtering
