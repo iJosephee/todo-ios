@@ -1,5 +1,5 @@
 //
-//  TaskCell.swift
+//  TaskRowView.swift
 //  ToDo
 //
 //  Created by Arnold Dominguez on 04/09/26.
@@ -7,8 +7,12 @@
 
 import SwiftUI
 
-struct TaskCell: View {
-    var task: Task
+struct TaskRowView: View {
+    @Binding var task: Task
+    
+    let tapAction: () -> Void
+    let swipeAction: () -> Void
+    
     var body: some View {
         HStack {
             Image(systemName: task.priority == Priority.Medium ? "exclamationmark" : task.priority == Priority.High ? "exclamationmark.2" : "")
@@ -39,6 +43,18 @@ struct TaskCell: View {
             }
             if task.isCompleted {
                 Image(systemName: "checkmark")
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            task.isCompleted.toggle()
+            tapAction()
+        }
+        .swipeActions {
+            Button(role: .destructive) {
+                swipeAction()
+            } label: {
+                Image(systemName: "trash")
             }
         }
     }

@@ -1,5 +1,5 @@
 //
-//  NewTaskSheet.swift
+//  AddTaskView.swift
 //  ToDo
 //
 //  Created by Arnold Dominguez on 31/08/26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct NewTaskSheet: View {
+struct AddTaskView: View {
     @State private var taskName = ""
     @State private var selectedCategory = Category.Personal
     @State private var currentPriority = Priority.Low
@@ -71,7 +71,7 @@ struct NewTaskSheet: View {
 }
 
 #Preview {
-    NewTaskSheet { name, category, priority, date in
+    AddTaskView { name, category, priority, date in
         print("Done")
     }
 }
