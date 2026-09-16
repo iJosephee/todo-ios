@@ -13,9 +13,16 @@ enum Category: String, Codable {
 }
 
 enum Priority: String, Codable {
-    case High = "Alta"
-    case Medium = "Media"
     case Low = "Baja"
+    case Medium = "Media"
+    case High = "Alta"
+}
+
+enum SortingType: Int {
+    case None = 0
+    case Name
+    case Date
+    case Priority
 }
 
 struct Task: Hashable, Codable {

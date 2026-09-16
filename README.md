@@ -17,6 +17,7 @@ Changed from .alert to .sheet
 To use DatePicker
 Format date using FormatStyle
 To use the Picker for segmented tabs
+Use te .confirmationDialog to show a Sheet with options.
 
 Features:
 
@@ -28,3 +29,4 @@ Add task categories
 Add task priorities
 Add task due dates
 Add task filtering
+Add task sorting

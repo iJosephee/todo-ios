@@ -10,8 +10,10 @@ import SwiftUI
 struct TaskList: View {
     @State private var tasks: [Task]
     @State private var showAlert = false
+    @State private var showSorting = false
     @State private var selectedCategory = Category.Personal
-    @State private var selectedFilter = 0
+    @State private var selectedTab = 0
+    @State private var selectedSort = SortingType.Name
     
     init() {
         if let data = UserDefaults.standard.data(forKey: "SavedTasks"),
@@ -43,7 +45,7 @@ struct TaskList: View {
     }
     
     var filters: some View {
-        Picker("Choose", selection: $selectedFilter) {
+        Picker("Choose", selection: $selectedTab) {
             Text("Todas").tag(0)
             Text("Pendientes").tag(1)
             Text("Completadas").tag(2)
@@ -56,7 +58,7 @@ struct TaskList: View {
     var taskList: some View {
         List {
             ForEach($tasks, id: \.self) { $task in
-                if selectedFilter == 3 {
+                if selectedTab == 3 {
                     if Calendar.current.component(.day, from: task.dueDate) < Calendar.current.component(.day, from: Date.now) {
                         // Expired
                         TaskCell(task: task)
@@ -75,7 +77,7 @@ struct TaskList: View {
                                 }
                             }
                     }
-                } else if selectedFilter == 2 {
+                } else if selectedTab == 2 {
                     // Completed
                     if task.isCompleted {
                         TaskCell(task: task)
@@ -94,7 +96,7 @@ struct TaskList: View {
                                 }
                             }
                     }
-                } else if selectedFilter == 1 {
+                } else if selectedTab == 1 {
                     // Pending
                     if !task.isCompleted {
                         TaskCell(task: task)
@@ -135,11 +137,27 @@ struct TaskList: View {
         }
         .navigationTitle("To Do")
         .toolbar {
-            Button {
-                showAlert = true
-            } label: {
-                Image(systemName: "plus")
+            ToolbarItem(placement: .cancellationAction) {
+                Button {
+                    showSorting = true
+                } label: {
+                    Image(systemName: "line.3.horizontal.decrease")
+                }
             }
+            ToolbarItem(placement: .confirmationAction) {
+                Button {
+                    showAlert = true
+                } label: {
+                    Image(systemName: "plus")
+                }
+            }
+        }
+        .confirmationDialog("Ordenar por: ", isPresented: $showSorting, titleVisibility: .visible) {
+            Button("Nombre") { sort(by: .Name) }
+            Button("Fecha") { sort(by: .Date) }
+            Button("Prioridad") { sort(by: .Priority) }
+            Button("Ninguno") { sort(by: .None) }
+            Button("Cancel", role: .cancel) {}
         }
         .sheet(isPresented: $showAlert) {
             NewTaskSheet { ( name, category, priority, dueDate) in
@@ -147,6 +165,27 @@ struct TaskList: View {
                     addTask(name, category, priority, dueDate)
                 }
                 showAlert = false
+            }
+        }
+    }
+    
+    func sort(by type: SortingType) {
+        if type == .None {
+            tasks.sort { $0.category.rawValue < $1.category.rawValue }
+        }
+        if type == .Name {
+            tasks.sort { $0.title < $1.title }
+        } else if type == .Date {
+            tasks.sort { $0.dueDate < $1.dueDate }
+        } else if type == .Priority {
+            tasks.sort {
+                if $0.priority == .Low && ($1.priority == .Medium || $1.priority == .High) {
+                    return true
+                } else if $0.priority == .Medium && $1.priority == .High {
+                    return true
+                } else {
+                    return false
+                }
             }
         }
     }
