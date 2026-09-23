@@ -14,6 +14,7 @@ struct TaskListView: View {
     @State private var selectedCategory = Category.Personal
     @State private var selectedTab = 0
     @State private var selectedSort = SortingType.Name
+    @State private var selectedTask: Task? = nil
     
     init() {
         if let data = UserDefaults.standard.data(forKey: "SavedTasks"),
@@ -80,35 +81,55 @@ struct TaskListView: View {
                          if selectedTab == 3 {
                              // Expired
                              if Calendar.current.component(.day, from: task.dueDate) < Calendar.current.component(.day, from: Date.now) {
-                                 TaskRowView(task: $task) {
-                                     saveTasks()
-                                 } swipeAction: {
-                                     deleteTask(task)
+                                 Button {
+                                     selectedTask = task
+                                     showAddTask = true
+                                 } label: {
+                                     TaskRowView(task: $task) {
+                                         saveTasks()
+                                     } swipeAction: {
+                                         deleteTask(task)
+                                     }
                                  }
                              }
                          } else if selectedTab == 2 {
                              // Completed
                              if task.isCompleted {
-                                 TaskRowView(task: $task) {
-                                     saveTasks()
-                                 } swipeAction: {
-                                     deleteTask(task)
+                                 Button {
+                                     selectedTask = task
+                                     showAddTask = true
+                                 } label: {
+                                     TaskRowView(task: $task) {
+                                         saveTasks()
+                                     } swipeAction: {
+                                         deleteTask(task)
+                                     }
                                  }
                              }
                          } else if selectedTab == 1 {
                              // Pending
                              if !task.isCompleted {
+                                 Button {
+                                     selectedTask = task
+                                     showAddTask = true
+                                 } label: {
+                                     TaskRowView(task: $task) {
+                                         saveTasks()
+                                     } swipeAction: {
+                                         deleteTask(task)
+                                     }
+                                 }
+                             }
+                         } else { // Show all
+                             Button {
+                                 selectedTask = task
+                                 showAddTask = true
+                             } label: {
                                  TaskRowView(task: $task) {
                                      saveTasks()
                                  } swipeAction: {
                                      deleteTask(task)
                                  }
-                             }
-                         } else { // Show all
-                             TaskRowView(task: $task) {
-                                 saveTasks()
-                             } swipeAction: {
-                                 deleteTask(task)
                              }
                          }
                      }
@@ -140,14 +161,27 @@ struct TaskListView: View {
              Button("Cancel", role: .cancel) {}
          }
         .sheet(isPresented: $showAddTask) {
-             AddTaskView { ( name, category, priority, dueDate) in
-                 if let name = name {
-                     addTask(name, category, priority, dueDate)
-                 }
-                 showAddTask = false
-             }
-         }
+            AddTaskView(task: $selectedTask, closing: saveOrUpdate)
+        }
      }
+    
+    func saveOrUpdate(task: Task?) {
+        if let task = task {
+            // Process a save request
+            if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+                // Edition Mode: The task already exists in list, replace their data
+                tasks[index] = task
+                selectedTask = nil
+            } else {
+                // Creation Mode: It's a new task, add it to array
+                tasks.append(task)
+            }
+            // Actually save on disk
+            saveTasks()
+        }
+        // Dismiss the sheet
+        showAddTask = false
+    }
     
     func sort(by type: SortingType) {
         if type == .None {
@@ -168,12 +202,6 @@ struct TaskListView: View {
                 }
             }
         }
-    }
-    
-    func addTask(_ name: String, _ category: Category, _ priority: Priority, _ dueDate: Date) {
-        let newTask = Task(title: name, category: category, priority: priority, dueDate: dueDate, isCompleted: false)
-        self.tasks.append(newTask)
-        saveTasks()
     }
     
     func deleteTask(_ task: Task) {

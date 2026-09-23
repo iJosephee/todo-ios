@@ -15,8 +15,22 @@ struct TaskRowView: View {
     
     var body: some View {
         HStack {
+            if task.isCompleted {
+                Image(systemName: "circle.fill")
+                    .onTapGesture {
+                        task.isCompleted.toggle()
+                        tapAction()
+                    }
+            } else {
+                Image(systemName: "circle")
+                    .onTapGesture {
+                        task.isCompleted.toggle()
+                        tapAction()
+                    }
+            }
             Image(systemName: task.priority == Priority.Medium ? "exclamationmark" : task.priority == Priority.High ? "exclamationmark.2" : "")
                 .foregroundColor(task.priority == Priority.Medium ? .orange : task.priority == Priority.High ? .red : .accentColor)
+
             VStack {
                 HStack {
                     Text(task.title)
@@ -41,15 +55,8 @@ struct TaskRowView: View {
                     }
                 }
             }
-            if task.isCompleted {
-                Image(systemName: "checkmark")
-            }
         }
         .contentShape(Rectangle())
-        .onTapGesture {
-            task.isCompleted.toggle()
-            tapAction()
-        }
         .swipeActions {
             Button(role: .destructive) {
                 swipeAction()

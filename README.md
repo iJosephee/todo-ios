@@ -18,6 +18,7 @@ To use DatePicker
 Format date using FormatStyle
 To use the Picker for segmented tabs
 Use te .confirmationDialog to show a Sheet with options.
+To refactor for use an Optional Binding
 
 Features:
 

@@ -26,9 +26,26 @@ enum SortingType: Int {
 }
 
 struct Task: Hashable, Codable {
+    var id = UUID()
     var title: String
     var category: Category
     var priority: Priority
     var dueDate: Date
     var isCompleted: Bool
+    
+    init() {
+        self.title = ""
+        self.category = .Personal
+        self.priority = .Low
+        self.dueDate = Date()
+        self.isCompleted = false
+    }
+    
+    init(title: String, category: Category, priority: Priority, dueDate: Date, isCompleted: Bool) {
+        self.title = title
+        self.category = category
+        self.priority = priority
+        self.dueDate = dueDate
+        self.isCompleted = isCompleted
+    }
 }
