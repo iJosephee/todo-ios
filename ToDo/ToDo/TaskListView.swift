@@ -10,6 +10,7 @@ import SwiftUI
 struct TaskListView: View {
     @State private var tasks: [Task]
     @State private var showAddTask = false
+    @State private var showDetailTask = false
     @State private var showSorting = false
     @State private var selectedCategory = Category.Personal
     @State private var selectedTab = 0
@@ -81,54 +82,70 @@ struct TaskListView: View {
                          if selectedTab == 3 {
                              // Expired
                              if Calendar.current.component(.day, from: task.dueDate) < Calendar.current.component(.day, from: Date.now) {
-                                 Button {
-                                     selectedTask = task
-                                     showAddTask = true
+                                 NavigationLink {
+                                     TaskDetailView(task: task)
                                  } label: {
-                                     TaskRowView(task: $task) {
-                                         saveTasks()
-                                     } swipeAction: {
-                                         deleteTask(task)
+                                     Button {
+                                         selectedTask = task
+                                         showDetailTask = true
+                                     } label: {
+                                         TaskRowView(task: $task) {
+                                             saveTasks()
+                                         } swipeAction: {
+                                             deleteTask(task)
+                                         }
                                      }
                                  }
                              }
                          } else if selectedTab == 2 {
                              // Completed
                              if task.isCompleted {
-                                 Button {
-                                     selectedTask = task
-                                     showAddTask = true
+                                 NavigationLink {
+                                     TaskDetailView(task: task)
                                  } label: {
-                                     TaskRowView(task: $task) {
-                                         saveTasks()
-                                     } swipeAction: {
-                                         deleteTask(task)
+                                     Button {
+                                         selectedTask = task
+                                         showDetailTask = true
+                                     } label: {
+                                         TaskRowView(task: $task) {
+                                             saveTasks()
+                                         } swipeAction: {
+                                             deleteTask(task)
+                                         }
                                      }
                                  }
                              }
                          } else if selectedTab == 1 {
                              // Pending
                              if !task.isCompleted {
+                                 NavigationLink {
+                                     TaskDetailView(task: task)
+                                 } label: {
+                                     Button {
+                                         selectedTask = task
+                                         showDetailTask = true
+                                     } label: {
+                                         TaskRowView(task: $task) {
+                                             saveTasks()
+                                         } swipeAction: {
+                                             deleteTask(task)
+                                         }
+                                     }
+                                 }
+                             }
+                         } else { // Show all
+                             NavigationLink {
+                                 TaskDetailView(task: task)
+                             } label: {
                                  Button {
                                      selectedTask = task
-                                     showAddTask = true
+                                     showDetailTask = true
                                  } label: {
                                      TaskRowView(task: $task) {
                                          saveTasks()
                                      } swipeAction: {
                                          deleteTask(task)
                                      }
-                                 }
-                             }
-                         } else { // Show all
-                             Button {
-                                 selectedTask = task
-                                 showAddTask = true
-                             } label: {
-                                 TaskRowView(task: $task) {
-                                     saveTasks()
-                                 } swipeAction: {
-                                     deleteTask(task)
                                  }
                              }
                          }

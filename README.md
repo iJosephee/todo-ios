@@ -19,6 +19,7 @@ Format date using FormatStyle
 To use the Picker for segmented tabs
 Use te .confirmationDialog to show a Sheet with options.
 To refactor for use an Optional Binding
+To understand the data flow between views.
 
 Features:
 
@@ -31,3 +32,4 @@ Add task priorities
 Add task due dates
 Add task filtering
 Add task sorting
+View task detail
